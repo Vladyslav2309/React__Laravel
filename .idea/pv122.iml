@@ -120,6 +120,11 @@
       <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/swagger-api/swagger-ui" />
       <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/darkaonline/l5-swagger" />
       <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/zircote/swagger-php" />
+      <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/psr/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/tymon/jwt-auth" />
+      <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/lcobucci/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/laravel.pv122.com/vendor/stella-maris/clock" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

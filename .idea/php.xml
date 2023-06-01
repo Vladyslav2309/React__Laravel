@@ -114,6 +114,11 @@
       <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/swagger-api/swagger-ui" />
       <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/darkaonline/l5-swagger" />
       <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/zircote/swagger-php" />
+      <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/psr/clock" />
+      <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/tymon/jwt-auth" />
+      <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/laravel.pv122.com/vendor/stella-maris/clock" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.1" />

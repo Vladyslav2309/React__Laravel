@@ -9,6 +9,10 @@ use Validator;
 use Storage;
 class CategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index']]);
+    }
     /**
      * @OA\Get(
      *     tags={"Category"},
@@ -83,4 +87,72 @@ class CategoryController extends Controller
         $category = Category::create($input);
         return response()->json($category);
     }
+
+
+    public function update($id, Request $request)
+    {
+        // Валидация данных из $request
+        $validator = Validator::make($request->all(), [
+            'name.required' => 'Вкажіть назву категорії!',
+            'description.required' => 'Вкажіть опис категорії!',
+            'image.required' => 'Оберіть фото категорії!'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // Поиск ресурса по $id
+        $category = Category::find($id);
+
+        // Если ресурс не найден, возвращаем ошибку 404
+        if (!$category ) {
+            return response()->json(['error' => 'Ресурс не найден'], 404);
+        }
+
+        // Обновление ресурса с данными из $request
+        $category ->name = $request->input('name');
+        $category ->description = $request->input('description');
+        $category ->save();
+
+        // Возвращаем успешный ответ
+        return response()->json(['message' => 'Ресурс успешно обновлен']);
+    }
+    /**
+     * @OA\Delete(
+     *     path="/api/category/{id}",
+     *     tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Идентификатор категории",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Успешное удаление категории"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Категория не найдена"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Не авторизован"
+     *     )
+     * )
+     */
+    public function delete($id)
+    {
+        $item =  Category::findOrFail($id);
+        $item->delete();
+        return response()->json(['message' => 'категорію видалено']);
+    }
+
+
+
 }

@@ -1,13 +1,20 @@
 import axios from "axios";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { ICategoryItem, ICategoryResponse, ICategorySearch } from "./types";
-import {Pagination, Stack} from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {Link, useSearchParams} from "react-router-dom";
+import {ICategoryItem, ICategoryResponse, ICategorySearch} from "./types";
+import {Pagination} from "@mui/material";
 import {number} from "yup";
 import {APP_ENV} from "../../env";
 import http from "../../http";
-
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import iconDelete from "../icons/IconDelete";
+import IconDelete from "../icons/IconDelete";
+import {Simulate} from "react-dom/test-utils";
+import compositionStart = Simulate.compositionStart;
+import {AuthUserActionType} from "../auth/types";
+import {useDispatch} from "react-redux";
 
 
 const HomePage = () => {
@@ -26,7 +33,7 @@ const HomePage = () => {
     });
 
     useEffect(() => {
-      http
+        http
             .get<ICategoryResponse>(`api/category`, {
                 params: search,
             })
@@ -39,43 +46,77 @@ const HomePage = () => {
             });
     }, [search]);
 
-    const { data, last_page, current_page, total } = category;
-   const buttons = [];
-   for (let i = 1; i <= last_page; i++) {
-       buttons.push(i);
-   }
+    const {data, last_page, current_page, total} = category;
+    const buttons = [];
+    for (let i = 1; i <= last_page; i++) {
+        buttons.push(i);
+    }
 
-   const pagination = buttons.map((page) => (
-       <li className={classNames("page-item", {"active": page===current_page})}>
-           <Link
-               className="page-link"
-               to={"?page=" + page}
-               onClick={() => setSearch({...search, page })}
-           >
-               {page}
-           </Link>
-       </li>
-   ));
-
+   function deleteCategory (category:ICategoryItem ) {
+       http.delete(`/api/category/${category.id}`)
+            .then(response => {
+               alert("Видалено!")
+            })
+            .catch(error => {
+                alert(error)
+            });
+    }
+    const pagination = buttons.map((page) => (
+        <li className={classNames("page-item", {"active": page === current_page})}>
+            <Link
+                className="page-link"
+                to={"?page=" + page}
+                onClick={() => setSearch({...search, page})}
+            >
+                {page}
+            </Link>
+        </li>
+    ));
 
 
     const dataView = data.map((category) => (
         <tr key={category.id}>
             <th>
-                <img src={`${APP_ENV.BASE_URL}/storage/uploads/${category.image}`} alt="Фотка" width={50} />
+                <img src={`${APP_ENV.BASE_URL}/storage/uploads/${category.image}`} alt="Фотка" width={50}/>
             </th>
             <td>{category.name}</td>
             <td>{category.description}</td>
+            <td><Stack direction="row" alignItems="center" spacing={1}>
+                <IconButton onClick={() => deleteCategory(category)}  aria-label="delete" size="small">
+                    <IconDelete/>
+                </IconButton>
+            </Stack>
+            </td>
+
         </tr>
     ));
 
+    const dispatch = useDispatch();
+
+    const loginUser = () => {
+        console.log("Вхід у систему");
+        dispatch({type: AuthUserActionType.LOGIN_USER});
+    }
+
+    const logoutUser = () => {
+        console.log("Вийти із системи");
+
+        dispatch({type: AuthUserActionType.LOGOUT_USER});
+    }
     return (
         <>
-            <h1 className="text-center">Список категорій</h1>
-            <Link className="btn btn-success" to="/categories/create">
-                Додати
-            </Link>
-            <h4>Усього записів: {total}</h4>
+            <h1 className="container text-center"  >Список категорій</h1>
+            <div className="container text-center">
+                <div className="row row-cols-sm-5">
+                    <button className="btn btn-primary" onClick={loginUser}>Вхід</button>
+                    <button className="btn btn-danger" onClick={logoutUser}>Вихід</button>
+                <Link className="btn btn-success" to="/categories/create">
+                    Додати
+                </Link>
+                <h5>Усього записів: {total}</h5>
+                </div>
+            </div>
+
             {data.length === 0 ? (
                 <h2>Дані відсутні</h2>
             ) : (
@@ -90,11 +131,12 @@ const HomePage = () => {
                         </thead>
                         <tbody>{dataView}</tbody>
                     </table>
-               {/*<ul className="pagination justify-content-center">{pagination}</ul>*/}
+
                     <div className="col-md-8 offset-md-3">
-                       <Stack spacing={2}>
-                           <Pagination  count={last_page} showFirstButton page={current_page} onChange={(_,n)=>setSearch({...search,page: n })} showLastButton />
-                    </Stack>
+                        <Stack spacing={2}>
+                            <Pagination count={last_page} showFirstButton page={current_page}
+                                        onChange={(_, n) => setSearch({...search, page: n})} showLastButton/>
+                        </Stack>
                     </div>
                 </>
             )}
