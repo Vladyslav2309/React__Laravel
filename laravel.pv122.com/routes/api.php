@@ -33,5 +33,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get("/category", [CategoryController:: class, 'index']);
 //додавання нової категорії
 Route::post("/category", [CategoryController:: class, 'store']);
-Route::put('/category/{id}', [CategoryController:: class, 'update']);
+Route::post("/category/edit/{id}", [CategoryController:: class, 'edit']);
 Route::delete('/category/{id}',  [CategoryController:: class, 'delete']);

@@ -1,8 +1,9 @@
-export interface  IRegistrationInfo{
+export interface  IUserCreate{
     firstName: string,
     lastName:string,
     email:string,
-    phoneNumber:string;
+    phone:string;
     password:string,
-    photo:  File|null,
+    password_confirmation: string,
+    image:  File|null,
 }

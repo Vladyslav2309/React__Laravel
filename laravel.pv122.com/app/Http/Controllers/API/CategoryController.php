@@ -11,12 +11,13 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index']]);
+        $this->middleware('auth:api');
     }
     /**
      * @OA\Get(
      *     tags={"Category"},
      *     path="/api/category",
+     *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
@@ -38,6 +39,7 @@ class CategoryController extends Controller
      * @OA\Post(
      *     tags={"Category"},
      *     path="/api/category",
+     *     security={{ "bearerAuth": {} }},
      *     @OA\RequestBody(
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
@@ -79,53 +81,150 @@ class CategoryController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors(), 400);
         }
-
+        //php artisan storage:link
         $filename = uniqid(). '.' .$request->file("image")->getClientOriginalExtension();
-        Storage::disk('local')->put("public/uploads/".$filename,file_get_contents($request->file("image")));
-        $input["image"] = $filename;
 
+        $dir = $_SERVER['DOCUMENT_ROOT'];
+        $fileSave = $dir.'/uploads/';
+
+        $sizes = [50, 150, 300, 600, 1200];
+        foreach ($sizes as $size) {
+            $this->image_resize($size,$size, $fileSave.$size.'_'.$filename, 'image');
+        }
+        $input["image"] = $filename;
         $category = Category::create($input);
         return response()->json($category);
     }
 
 
-    public function update($id, Request $request)
+    function image_resize($width, $height, $path, $inputName)
     {
-        // Валидация данных из $request
-        $validator = Validator::make($request->all(), [
+        list($w,$h)=getimagesize($_FILES[$inputName]['tmp_name']);
+        $maxSize=0;
+        if(($w>$h)and ($width>$height))
+            $maxSize=$width;
+        else
+            $maxSize=$height;
+        $width=$maxSize;
+        $height=$maxSize;
+        $ration_orig=$w/$h;
+        if(1>$ration_orig)
+            $width=ceil($height*$ration_orig);
+        else
+            $height=ceil($width/$ration_orig);
+        //отримуємо файл
+        $imgString=file_get_contents($_FILES[$inputName]['tmp_name']);
+        $image=imagecreatefromstring($imgString);
+        //нове зображення
+        $tmp=imagecreatetruecolor($width,$height);
+        imagecopyresampled($tmp, $image,
+            0,0,
+            0,0,
+            $width, $height,
+            $w, $h);
+        //Зберегти зображення у файлову систему
+        switch($_FILES[$inputName]['type'])
+        {
+            case 'image/jpeg':
+                imagejpeg($tmp,$path,30);
+                break;
+            case 'image/png':
+                imagepng($tmp,$path,0);
+                break;
+            case 'image/gif':
+                imagegif($tmp, $path);
+                break;
+        }
+        return $path;
+        //очисчаємо память
+        imagedestroy($image);
+        imagedestroy($tmp);
+    }
+    /**
+     * @OA\Post(
+     *     tags={"Category"},
+     *     path="/api/category/edit/{id}",
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the category to update",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"name"},
+     *                 @OA\Property(
+     *                     property="image",
+     *                     type="string",
+     *                     format="binary"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response="200", description="Update Category.")
+     * )
+     */
+
+    public function edit($id, Request $request)
+    {
+        //отримуємо дані із запиту(name, image, description)
+        $input = $request->all();
+        $file = Category::findOrFail($id);
+
+        $messages = array(
             'name.required' => 'Вкажіть назву категорії!',
-            'description.required' => 'Вкажіть опис категорії!',
-            'image.required' => 'Оберіть фото категорії!'
-        ]);
+            'description.required' => 'Вкажіть опис категорії!'
+        );
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'description' => 'required'
+
+        ], $messages);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json($validator->errors(), 400);
         }
 
-        // Поиск ресурса по $id
-        $category = Category::find($id);
-
-        // Если ресурс не найден, возвращаем ошибку 404
-        if (!$category ) {
-            return response()->json(['error' => 'Ресурс не найден'], 404);
+        $newFileName = uniqid().'.'.$request->file("image")->getClientOriginalExtension();
+        $sizes = [50, 150, 300, 600, 1200];
+        foreach ($sizes as $size) {
+            $fileName = $_SERVER['DOCUMENT_ROOT'].'/uploads/'.$size.'_'.$file["image"];
+            if (is_file($fileName)) {
+                unlink($fileName);
+            }
+            $this->image_resize($size,$size,$_SERVER['DOCUMENT_ROOT'].'/uploads/'.$size.'_'.$newFileName, 'image');
         }
+        $file->image=$newFileName;
+        $file->name = $input['name'];
+        $file->description = $input['description'];
+        $file->save();
 
-        // Обновление ресурса с данными из $request
-        $category ->name = $request->input('name');
-        $category ->description = $request->input('description');
-        $category ->save();
-
-        // Возвращаем успешный ответ
-        return response()->json(['message' => 'Ресурс успешно обновлен']);
+        return response()->json($file);
     }
     /**
      * @OA\Delete(
      *     path="/api/category/{id}",
      *     tags={"Category"},
+     *    security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Идентификатор категории",
+     *         description="Ідентифікатор категорії",
      *         required=true,
      *         @OA\Schema(
      *             type="number",
@@ -134,22 +233,29 @@ class CategoryController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Успешное удаление категории"
+     *         description="Успішне видалення категорії"
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Категория не найдена"
+     *         description="Категорії не знайдено"
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Не авторизован"
+     *         description="Не авторизований"
      *     )
      * )
      */
     public function delete($id)
     {
-        $item =  Category::findOrFail($id);
-        $item->delete();
+        $file =  Category::findOrFail($id);
+        $sizes = [50, 150, 300, 600, 1200];
+        foreach ($sizes as $size) {
+            $fileName = $_SERVER['DOCUMENT_ROOT'].'/uploads/'.$size.'_'.$file["image"];
+            if (is_file($fileName)) {
+                unlink($fileName);
+            }
+        }
+        $file->delete();
         return response()->json(['message' => 'категорію видалено']);
     }
 

@@ -90,11 +90,11 @@ class AuthController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="lastName",
+     *                     property="firstName",
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="name",
+     *                     property="lastName",
      *                     type="string"
      *                 ),
      *                 @OA\Property(
@@ -118,7 +118,7 @@ class AuthController extends Controller
 
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
+            'firstName' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
             'phone' => 'required|string|max:40',

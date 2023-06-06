@@ -6,6 +6,7 @@ import classNames from "classnames";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import http from "../../../http";
+import defaultImage from "../../../assets/defIm.png";
 
 const CategoryCreatePage = () => {
 
@@ -32,7 +33,7 @@ const CategoryCreatePage = () => {
             },
         })
             .then(resp => {
-                //console.log("Create date in server", resp);
+
                 navigator("/");
             });
     }
@@ -78,9 +79,23 @@ const CategoryCreatePage = () => {
                     <label htmlFor="image" className="form-label">
                         Фото
                     </label>
+                    <br />
+                    <label htmlFor="image">
+                        <img
+                            src={
+                                values.image == null
+                                    ? defaultImage
+                                    : URL.createObjectURL(values.image)
+                            }
+                            alt="фото"
+                            width={150}
+                            style={{ cursor: "pointer" }}
+                        />
+                    </label>
+
                     <input
                         type="file"
-                        className={classNames("form-control", {"is-invalid": errors.image && touched.image})}
+                        className="form-control d-none"
                         id="image"
                         name="image"
                         onChange={onImageChangeHandler}

@@ -34,7 +34,12 @@
                     "200": {
                         "description": "List Categories."
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -71,7 +76,66 @@
                     "200": {
                         "description": "Add Category."
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/category/edit/{id}": {
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "operationId": "01ad539b6502c761db3795fe2c9cf735",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the category to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update Category."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/category/{id}": {
@@ -84,7 +148,7 @@
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Идентификатор категории",
+                        "description": "Ідентифікатор категорії",
                         "required": true,
                         "schema": {
                             "type": "number",
@@ -94,15 +158,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешное удаление категории"
+                        "description": "Успішне видалення категорії"
                     },
                     "404": {
-                        "description": "Категория не найдена"
+                        "description": "Категорії не знайдено"
                     },
                     "401": {
-                        "description": "Не авторизован"
+                        "description": "Не авторизований"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/auth/login": {
@@ -184,10 +253,10 @@
                                     "email": {
                                         "type": "string"
                                     },
-                                    "lastName": {
+                                    "firstName": {
                                         "type": "string"
                                     },
-                                    "name": {
+                                    "lastName": {
                                         "type": "string"
                                     },
                                     "phone": {
@@ -264,6 +333,15 @@
                         "apiAuth": []
                     }
                 ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }
