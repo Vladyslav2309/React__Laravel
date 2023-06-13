@@ -10,6 +10,7 @@ import LoginPage from "./components/auth/login/LoginPage";
 import RegistrationPage from "./components/auth/registration/RegistrationPage";
 import CategoryEditPage from "./components/category/edit/CategoryEditPage";
 import {ICategoryItem} from "./components/home/types";
+import ProductCreatePage from "./components/product/ProductCreatePage";
 
 function App() {
     return (
@@ -21,8 +22,7 @@ function App() {
                     <Route path="categories/create" element={<CategoryCreatePage/>}/>
                     <Route path="register" element={<RegistrationPage/>}/>
                     <Route path="login" element={<LoginPage/>}/>
-
-
+                    <Route path="products/create" element={<ProductCreatePage/>}/>
                 </Route>
             </Routes>
 

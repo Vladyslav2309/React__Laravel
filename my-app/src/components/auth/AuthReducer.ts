@@ -12,13 +12,15 @@ export const AuthReducer = (state=initState, action: any) : IAuthUser => {
         case AuthUserActionType.LOGIN_USER: {
             const user=action.payload as IUser;
             return {
+                image:user.image,
                 isAuth: true,
                 user
             };
         }
         case AuthUserActionType.LOGOUT_USER: {
             return {
-                isAuth: false
+                isAuth: false,
+                image: null,
             };
         }
     }

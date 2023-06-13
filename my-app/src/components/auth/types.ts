@@ -5,8 +5,10 @@ export enum AuthUserActionType {
 export interface IAuthUser{
     isAuth:boolean
     user?: IUser
+    image:  File|null
 }
 export interface IUser{
     email:string,
     name:string
+    image:  File|null
 }

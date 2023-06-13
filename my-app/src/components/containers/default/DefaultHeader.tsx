@@ -3,6 +3,8 @@ import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {AuthUserActionType, IAuthUser} from "../../auth/types";
 import http from "../../../http";
+import {APP_ENV} from "../../../env";
+import React from "react";
 const DefaultHeader = () => {
 
     const dispatch=useDispatch();
@@ -40,7 +42,12 @@ const DefaultHeader = () => {
                             <ul className="navbar-nav me-auto mb-2 mb-md-0">
                                 <li className="nav-item">
                                     <Link className="nav-link active" aria-current="page" to="/categories/create">
-                                        Додати
+                                        Додати категорію
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link active" aria-current="page" to="/products/create">
+                                        Додати товар
                                     </Link>
                                 </li>
 
@@ -48,6 +55,8 @@ const DefaultHeader = () => {
                             <ul className="navbar-nav">
                                 {isAuth ? (
                                     <>
+
+                                        <img src={`${APP_ENV.BASE_URL}/uploads/50_${user?.image}`} alt="Фотка" width={20}/>
                                         <li className="nav-item">
                                         <Link className="nav-link" aria-current="page" to="/profile">
                                             {user?.email}

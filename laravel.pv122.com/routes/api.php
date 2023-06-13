@@ -31,6 +31,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 //отримання списку категорій
 Route::get("/category", [CategoryController:: class, 'index']);
+Route::get("/category/select", [CategoryController:: class, 'select']);
+
 //додавання нової категорії
 Route::post("/category", [CategoryController:: class, 'store']);
 Route::post("/category/edit/{id}", [CategoryController:: class, 'edit']);
