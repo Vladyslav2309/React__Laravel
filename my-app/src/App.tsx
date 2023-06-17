@@ -13,6 +13,7 @@ import {ICategoryItem} from "./components/home/types";
 import ProductCreatePage from "./components/product/ProductCreatePage";
 
 function App() {
+    // @ts-ignore
     return (
         <div>
             <DefaultHeader/>

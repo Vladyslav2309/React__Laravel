@@ -87,7 +87,7 @@ class CategoryController extends Controller
                 break;
         }
         return $path;
-        //очисчаємо память
+        //очищаємо память
         imagedestroy($image);
         imagedestroy($tmp);
     }

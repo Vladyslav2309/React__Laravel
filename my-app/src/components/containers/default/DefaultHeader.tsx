@@ -5,9 +5,10 @@ import {AuthUserActionType, IAuthUser} from "../../auth/types";
 import http from "../../../http";
 import {APP_ENV} from "../../../env";
 import React from "react";
+
 const DefaultHeader = () => {
 
-    const dispatch=useDispatch();
+    const dispatch = useDispatch();
 
     const logout = () => {
         delete http.defaults.headers.common["Authorization"];
@@ -15,8 +16,7 @@ const DefaultHeader = () => {
         dispatch({type: AuthUserActionType.LOGOUT_USER});
     }
 
-    const {isAuth, user}=useSelector((store:any)=>store.auth as  IAuthUser);
-
+    const {isAuth, user} = useSelector((store: any) => store.auth as IAuthUser);
 
 
     return (
@@ -56,12 +56,13 @@ const DefaultHeader = () => {
                                 {isAuth ? (
                                     <>
 
-                                        <img src={`${APP_ENV.BASE_URL}/uploads/50_${user?.image}`} alt="Фотка" width={20}/>
+                                        <img src={`${APP_ENV.BASE_URL}/uploads/50_${user?.image}`} alt="Фотка"
+                                             width={20}/>
                                         <li className="nav-item">
-                                        <Link className="nav-link" aria-current="page" to="/profile">
-                                            {user?.email}
-                                        </Link>
-                                    </li>
+                                            <Link className="nav-link" aria-current="page" to="/profile">
+                                                {user?.email}
+                                            </Link>
+                                        </li>
                                         <li className="nav-item">
                                             <Link
                                                 className="nav-link"
